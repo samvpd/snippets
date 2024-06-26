@@ -1,0 +1,33 @@
+name: CI
+
+on: 
+  pull_request:
+    branches: ['main']
+  push:
+    branches: ['main']
+
+jobs: 
+  lint_test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    env: 
+      GITHUB_SECRET: ${{ secrets.GH_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - run: npm install --fronzen-lockfile
+      - run: npm run lint
+      - run: npm run lint:ts
+      - run: npm run test
+      
+        
